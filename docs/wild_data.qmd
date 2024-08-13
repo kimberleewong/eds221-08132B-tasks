@@ -1,0 +1,80 @@
+---
+title: "wild_data"
+author: "Kimmy Wong"
+format: html
+editor_options: 
+  chunk_output_type: console
+execute: 
+  warning: false
+---
+## attach packages
+```{r}
+library(tidyverse)
+library(janitor)
+library(here)
+```
+
+## read in data
+```{r}
+mack_verts <- read_csv(here::here("data", "AS00601.csv"))
+view(mack_verts)
+```
+
+## data wrangle
+```{r}
+mack_verts <- clean_names(mack_verts)
+```
+
+## storing practice
+```{r}
+mc_wt_5 <- mack_verts$weight[5]
+mc_length_8_20 <- mack_verts$length1[8:20]
+view(mc_length_8_20)
+mc_dates <- c(mack_verts$sampledate)
+typeof(mc_dates)
+```
+
+## salamander subset
+```{r}
+mc_salamanders <- filter(mack_verts, species == "DITE")
+```
+
+## make salamander plot
+```{r}
+#| fig-cap: There is an increasing trend in pacific giant salamanders' weight and height. As their snout length increase, so does their weight. 
+ggplot(mc_salamanders, aes(x = length1, y = weight)) +
+      geom_point(color = "pink", size = 1.1, alpha = 0.5) +
+      labs(title = "Pacifc Giant Salamanders Length v Height", 
+           x = "Snout-vent Length (mm)",
+           y = "Weight (g)") +
+      theme_minimal()
+```
+
+## export graph
+```{r}
+ggsave(here::here("figs", "salamander_size.png"), height = 6, width = 5)
+```
+
+## make cutthroat trout subset
+```{r}
+mc_trout <- filter(mack_verts, species == "ONCL")
+```
+
+## make cutthroat trout plot
+```{r}
+ggplot(mc_trout, aes(x = length1, y = weight, colour = reach)) +
+         scale_color_manual(values = c("pink", "purple", "blue")) +
+      geom_point(size = 1.1, alpha = 0.5, show.legend = FALSE) +
+      labs(title = "Cutthroat Trout Length v Height", 
+           x = "Snout-vent Length (mm)",
+           y = "Weight (g)") +
+      theme_minimal() +
+      facet_wrap(~reach)
+```
+## export graph
+```{r}
+ggsave(here::here("figs", "cutthroat_size.png"), height = 6, width = 5)
+```
+
+
+
